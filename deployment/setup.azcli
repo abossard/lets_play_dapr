@@ -1,0 +1,14 @@
+L=westeurope
+RG=anbossar-play-dapr
+CLUSTERNAME=anbossarplaydapr
+ACR=anbossaracr2
+wget -q https://raw.githubusercontent.com/dapr/cli/master/install/install.sh -O - | /bin/bash
+dapr list
+az group create --name $RG --location $L
+az acr create -n $ACR -g $RG --sku Standard
+az aks create -g $RG -n $CLUSTERNAME --node-osdisk-type Ephemeral -s Standard_DS3_v2 -c 2 -a monitoring,http_application_routing --attach-acr $ACR -x
+az aks get-credentials --resource-group $RG --name $CLUSTERNAME
+dapr init -k
+dapr status -k
+
+#az group delete -n $RG
